@@ -12,6 +12,8 @@ describe("Basic test for undertstanding ERC20", async ()=>{
         const myTokenContractFactory = await ethers.getContractFactory("MyToken");
         myTokenContract = await myTokenContractFactory.deploy();
         await myTokenContract.deployTransaction.wait();
+        const mintTx = await myTokenContract.mint(signers[0].address, 100000);
+        await mintTx.wait();
     });
 
     it("it should have zero total supply at deployment", async () => {
@@ -20,7 +22,7 @@ describe("Basic test for undertstanding ERC20", async ()=>{
     })
 
     it ("Triggers transfer event with the address of the sender when sending transations", async () => {
-        await expect(myTokenContract.transfer(signers[1].address, 10)).to.emit(myTokenContract, "Transfer").withArgs();
+        await expect(myTokenContract.transfer(signers[2].address, 10)).to.emit(myTokenContract, "Transfer").withArgs(signers[0].address,signers[2].address, 10);
     })
 });
 
