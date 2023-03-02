@@ -22,7 +22,7 @@ describe("Basic test for undertstanding ERC20", async ()=>{
     })
 
     it ("Triggers transfer event with the address of the sender when sending transations", async () => {
-        await expect(myTokenContract.transfer(signers[2].address, 10)).to.emit(myTokenContract, "Transfer").withArgs(signers[0].address,signers[2].address, 10);
+        await expect(myTokenContract.transfer(signers[1].address, 10)).to.emit(myTokenContract, "Transfer").withArgs(signers[0].address,signers[1].address, 10);
     })
 });
 
