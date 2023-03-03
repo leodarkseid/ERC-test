@@ -1,31 +1,43 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
+import exp from "constants";
 import { ethers } from "hardhat";
-import { TokenSale, TokenSale__factory } from "../typechain-types";
+import { MyToken, MyToken__factory, TokenSale, TokenSale__factory } from "../typechain-types";
 
 const TEST_TOKEN_RATIO = 1;
 
 describe("NFT Shop", async () => {
-    let contract: TokenSale;
+    let tokenSaleContract: TokenSale;
+    let tokenContract: MyToken;
     let deployer: SignerWithAddress;
     let account1: SignerWithAddress;
     let account2: SignerWithAddress;
 
     beforeEach(async () => {
         [deployer, account1, account2] = await ethers.getSigners();
-        const contractFactory = new TokenSale__factory(account1);
-        contract = await contractFactory.deploy(TEST_TOKEN_RATIO);
-        await contract.deployTransaction.wait()
+        
+        const tokenContractFactory = new MyToken__factory(deployer);
+        tokenContract = await tokenContractFactory.deploy();
+        await tokenContract.deployTransaction.wait();
+
+        const tokenSaleContractFactory = new TokenSale__factory(deployer);
+        tokenSaleContract = await tokenSaleContractFactory.deploy(TEST_TOKEN_RATIO, tokenContract.address);
+        await tokenSaleContract.deployTransaction.wait()
     });
 
   describe("When the Shop contract is deployed", async () => {
     it("defines the ratio as provided in parameters", async () => {
-      const ratio = await contract.ratio();
+      const ratio = await tokenSaleContract.ratio();
       expect(ratio).to.eq(TEST_TOKEN_RATIO);
     });
 
     it("uses a valid ERC20 as payment token", async () => {
-      throw new Error("Not implemented");
+      const tokenAddress = await tokenSaleContract.tokenAddress();
+      const tokenContractFactory = new MyToken__factory(deployer);
+      const tokenUsedInContract = tokenContractFactory.attach(tokenAddress)
+      await expect(tokenUsedInContract.totalSupply()).to.not.be.reverted;
+      await expect(tokenUsedInContract.balanceOf(account1.address)).to.not.be.reverted;
+      await expect(tokenUsedInContract.transfer(account1.address, 1)).to.be.revertedWith("ERC20: transfer amount exceeds balance")
     });
   });
 
