@@ -6,6 +6,7 @@ import { ethers } from "hardhat";
 import { MyToken, MyToken__factory, TokenSale, TokenSale__factory } from "../typechain-types";
 
 const TEST_TOKEN_RATIO = 1;
+const TEST_TOKEN_MINT = ethers.utils.parseUnits("1");
 
 describe("NFT Shop", async () => {
     let tokenSaleContract: TokenSale;
@@ -48,18 +49,25 @@ describe("NFT Shop", async () => {
 
   describe("When a user buys an ERC20 from the Token contract", async () => {
     let tokenBalanceBeforeMint: BigNumber;
+    let ethBalanceBeforeMint: BigNumber;
+    let mintTxGasCost: BigNumber;
     beforeEach(async () => {
         tokenBalanceBeforeMint = await tokenContract.balanceOf(account1.address)
-        const buyTokensTx = await tokenSaleContract.connect(account1).buyTokens();
-        await buyTokensTx.wait();
+        ethBalanceBeforeMint = await account1.getBalance();
+        const buyTokensTx = await tokenSaleContract.connect(account1).buyTokens({value: TEST_TOKEN_MINT});
+        const buyTokensTxReceipt = await buyTokensTx.wait();
+        mintTxGasCost = buyTokensTxReceipt.gasUsed.mul(buyTokensTxReceipt.effectiveGasPrice)
     });
 
     it("charges the correct amount of ETH", async () => {
-      throw new Error("Not implemented");
+        const ethBalanceAfterMint = await account1.getBalance();
+        expect(ethBalanceBeforeMint.sub(ethBalanceAfterMint)).to.eq(TEST_TOKEN_MINT.add(mintTxGasCost))
     });
+    
 
     it("gives the correct amount of tokens", async () => {
-      throw new Error("Not implemented");
+        const tokenBalanceAfterMint = await tokenContract.balanceOf(account1.address);
+        expect(tokenBalanceAfterMint.sub(tokenBalanceBeforeMint)).to.eq(TEST_TOKEN_MINT.mul(TEST_TOKEN_RATIO) );
     });
   });
 

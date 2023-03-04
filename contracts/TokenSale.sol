@@ -6,9 +6,10 @@ import "./MyERC20.sol";
 interface IMyToken {
     function mint(address to, uint256 amount) external;
 }
+
 contract TokenSale {
     uint256 public ratio;
-    address public tokenAddress;
+    IMyToken public tokenAddress;
 
     constructor(uint256 _ratio, address _tokenAddress){
         ratio = _ratio;
