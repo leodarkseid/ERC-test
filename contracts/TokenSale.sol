@@ -5,7 +5,7 @@ import "./MyERC20.sol";
 
 interface IMyToken {
     function mint(address to, uint256 amount) external;
-
+}
 contract TokenSale {
     uint256 public ratio;
     address public tokenAddress;
@@ -15,7 +15,7 @@ contract TokenSale {
         tokenAddress = IMyToken(_tokenAddress);
     }
 
-    function buyTokens(uint amount) external payable {
+    function buyTokens() external payable {
         tokenAddress.mint(msg.sender, msg.value * ratio);
     }
 }

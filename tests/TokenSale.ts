@@ -1,6 +1,7 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import exp from "constants";
+import { BigNumber } from "ethers";
 import { ethers } from "hardhat";
 import { MyToken, MyToken__factory, TokenSale, TokenSale__factory } from "../typechain-types";
 
@@ -23,6 +24,10 @@ describe("NFT Shop", async () => {
         const tokenSaleContractFactory = new TokenSale__factory(deployer);
         tokenSaleContract = await tokenSaleContractFactory.deploy(TEST_TOKEN_RATIO, tokenContract.address);
         await tokenSaleContract.deployTransaction.wait()
+
+        const minterRole = await tokenContract.MINTER_ROLE()
+        const giveTokenMintRoleTx = await tokenContract.grantRole(minterRole, tokenSaleContract.address);
+        await giveTokenMintRoleTx.wait();
     });
 
   describe("When the Shop contract is deployed", async () => {
@@ -42,9 +47,11 @@ describe("NFT Shop", async () => {
   });
 
   describe("When a user buys an ERC20 from the Token contract", async () => {
+    let tokenBalanceBeforeMint: BigNumber;
     beforeEach(async () => {
-        const buyTokensTx = await tokenSaleContract.connect(account1).buyTokens;
-        const buyTokens
+        tokenBalanceBeforeMint = await tokenContract.balanceOf(account1.address)
+        const buyTokensTx = await tokenSaleContract.connect(account1).buyTokens();
+        await buyTokensTx.wait();
     });
 
     it("charges the correct amount of ETH", async () => {
