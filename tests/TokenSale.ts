@@ -42,7 +42,10 @@ describe("NFT Shop", async () => {
   });
 
   describe("When a user buys an ERC20 from the Token contract", async () => {
-    beforeEach(async () => {});
+    beforeEach(async () => {
+        const buyTokensTx = await tokenSaleContract.connect(account1).buyTokens;
+        const buyTokens
+    });
 
     it("charges the correct amount of ETH", async () => {
       throw new Error("Not implemented");
