@@ -4,6 +4,7 @@ pragma solidity >0.7 <0.9;
 import "./MyERC20.sol";
 import "./MyERC721.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
 interface IMyToken is IERC20{
     function mint(address to, uint256 amount) external;
@@ -15,9 +16,10 @@ interface IMyNFT{
     function safeMint(address to, uint256 tokenId) external;
 }
 
-contract TokenSale {
+contract TokenSale is Ownable {
     uint256 public ratio;
     uint256 public price;
+    uint256 public withdrawableAmount;
     IMyToken public tokenAddress;
     IMyNFT public nftAddress;
 
@@ -40,5 +42,18 @@ contract TokenSale {
     function buyNFT(uint256 tokenId) external{
         tokenAddress.transferFrom(msg.sender, address(this), price);
         nftAddress.safeMint(msg.sender, tokenId);
+        withdrawableAmount += price / 2;
         }
+
+    function burnNFT(uint256 tokenId) external {
+        require(msg.sender == nftAddress.ownerOf(tokenId)); 
+        nftAddress.burnFrom(tokenid);
+        tokenAddress.transfer(owner(), amount);
+    }
+    
+
+    function withdraw(uint256 amount) external onlyOwner{
+        withdrawableAmount -= amount;
+        tokenAddress.transfer(owner(), amount);
+    }
 }

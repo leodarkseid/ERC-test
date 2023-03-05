@@ -150,22 +150,21 @@ describe("NFT Shop", async () => {
   });
 });
 
-  describe("When a user burns their NFT at the Shop contract", async () => {
-    it("gives the correct amount of ERC20 tokens", async () => {
-      throw new Error("Not implemented");
-    });
-    it("updates the public pool correctly", async () => {
-      throw new Error("Not implemented");
-    });
+describe("When a user burns their NFT at the Shop contract", async () => {
+  it("gives the correct amount of ERC20 tokens", async () => {
+    throw new Error("Not implemented");
+  });
+});
+
+describe("When the owner withdraws from the Shop contract", async () => {
+  it("recovers the right amount of ERC20 tokens", async () => {
+    throw new Error("Not implemented");
   });
 
-  describe("When the owner withdraws from the Shop contract", async () => {
-    it("recovers the right amount of ERC20 tokens", async () => {
-      throw new Error("Not implemented");
-    });
-
-    it("updates the owner pool account correctly", async () => {
-      throw new Error("Not implemented");
-    });
+  it("updates the owner pool account correctly", async () => {
+    const withdrawableAmount = await tokenSaleContract.withdrawableAmount();
+    console.o
+    expect(withdrawableAmount).to.eq(TEST_TOKEN_PRICE.div(2))
   });
+});
 });
