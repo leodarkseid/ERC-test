@@ -67,12 +67,19 @@ describe("NFT Shop", async () => {
 
     it("gives the correct amount of tokens", async () => {
         const tokenBalanceAfterMint = await tokenContract.balanceOf(account1.address);
-        expect(tokenBalanceAfterMint.sub(tokenBalanceBeforeMint)).to.eq(TEST_TOKEN_MINT.mul(TEST_TOKEN_RATIO) );
+        expect(tokenBalanceAfterMint.sub(tokenBalanceBeforeMint)).to.eq(
+            TEST_TOKEN_MINT.mul(TEST_TOKEN_RATIO)
+        );
     });
-  });
+  
 
   describe("When a user burns an ERC20 at the Shop contract", async () => {
+    beforeEach(async () => {
+        const burnTx = await tokenSaleContract.connect(account1).burnTokens()
+    });
+
     it("gives the correct amount of ETH", async () => {
+    //   console.log(await tokenContract.balanceOf(account1.address));  
       throw new Error("Not implemented");
     });
 
@@ -80,7 +87,7 @@ describe("NFT Shop", async () => {
       throw new Error("Not implemented");
     });
   });
-
+});
   describe("When a user buys an NFT from the Shop contract", async () => {
     it("charges the correct amount of ERC20 tokens", async () => {
       throw new Error("Not implemented");

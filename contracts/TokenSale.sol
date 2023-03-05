@@ -19,4 +19,9 @@ contract TokenSale {
     function buyTokens() external payable {
         tokenAddress.mint(msg.sender, msg.value * ratio);
     }
+
+    function burnTokens(uint256 amount) external  {
+        //Receive tokens and burn them
+        //Give ETH back to the user
+    }
 }
