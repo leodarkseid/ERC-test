@@ -25,7 +25,10 @@ describe("NFT Shop", async () => {
         await tokenContract.deployTransaction.wait();
 
         const tokenSaleContractFactory = new TokenSale__factory(deployer);
-        tokenSaleContract = await tokenSaleContractFactory.deploy(TEST_TOKEN_RATIO, tokenContract.address);
+        tokenSaleContract = await tokenSaleContractFactory.deploy(
+          TEST_TOKEN_RATIO,
+          TEST_TOKEN_PRICE,
+          tokenContract.address);
         await tokenSaleContract.deployTransaction.wait()
 
         const minterRole = await tokenContract.MINTER_ROLE()
@@ -105,11 +108,10 @@ describe("NFT Shop", async () => {
       const tokenBalanceAfterBurn = await tokenContract.balanceOf(account1.address)
       const diff = tokenBalanceBeforeBurn.sub(tokenBalanceAfterBurn);
       expect(diff).to.eq(burnAmount);
-      
     });
   });
 });
-  describe("When a user buys an NFT from the Shop contract", async () => {
+  describe("When a user purchases an NFT from the Shop contract", async () => {
     it("charges the correct amount of ERC20 tokens", async () => {
       throw new Error("Not implemented");
     });
