@@ -163,7 +163,6 @@ describe("When the owner withdraws from the Shop contract", async () => {
 
   it("updates the owner pool account correctly", async () => {
     const withdrawableAmount = await tokenSaleContract.withdrawableAmount();
-    console.o
     expect(withdrawableAmount).to.eq(TEST_TOKEN_PRICE.div(2))
   });
 });
