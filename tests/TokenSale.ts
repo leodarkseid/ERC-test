@@ -1,9 +1,10 @@
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { expect } from "chai";
 import exp from "constants";
-import { BigNumber } from "ethers";
+import { BigNumber, BigNumberish } from "ethers";
 import { ethers } from "hardhat";
 import { MyToken, MyToken__factory, TokenSale, TokenSale__factory } from "../typechain-types";
+import { PromiseOrValue } from "../typechain-types/common";
 
 const TEST_TOKEN_RATIO = 1;
 const TEST_TOKEN_MINT = ethers.utils.parseUnits("1");
@@ -74,17 +75,36 @@ describe("NFT Shop", async () => {
   
 
   describe("When a user burns an ERC20 at the Shop contract", async () => {
+    let tokenBalanceBeforeBurn: BigNumber;
+    let burnAmount: BigNumber;
+    let ethBalanceBeforeBurn: BigNumber;
+    let allowTxgasCost: BigNumber;
+    let burnTxgasCost: BigNumber;
+
     beforeEach(async () => {
-        const burnTx = await tokenSaleContract.connect(account1).burnTokens()
+      ethBalanceBeforeBurn = await account1.getBalance();
+        tokenBalanceBeforeBurn = await tokenContract.balanceOf(account1.address);
+        burnAmount = tokenBalanceBeforeBurn.div(2);
+        const allowTx = await tokenContract.connect(account1).approve(tokenSaleContract.address, burnAmount);
+        const allowTxReceipt = await allowTx.wait();
+        allowTxgasCost = allowTxReceipt.gasUsed.mul(allowTxReceipt.effectiveGasPrice);
+        const burnTx = await tokenSaleContract.connect(account1).burnTokens(burnAmount);
+        const burnTxReceipt = await burnTx.wait();
+        burnTxgasCost = burnTxReceipt.gasUsed.mul(burnTxReceipt.effectiveGasPrice);
     });
 
     it("gives the correct amount of ETH", async () => {
-    //   console.log(await tokenContract.balanceOf(account1.address));  
-      throw new Error("Not implemented");
+      const ethBalanceAfterBurn = await account1.getBalance();
+      const diff = ethBalanceAfterBurn.sub(ethBalanceBeforeBurn);
+      const costs = allowTxgasCost.add(burnTxgasCost);
+      expect(diff).to. eq(burnAmount.div(TEST_TOKEN_RATIO).sub(costs));
     });
 
     it("burns the correct amount of tokens", async () => {
-      throw new Error("Not implemented");
+      const tokenBalanceAfterBurn = await tokenContract.balanceOf(account1.address)
+      const diff = tokenBalanceBeforeBurn.sub(tokenBalanceAfterBurn);
+      expect(diff).to.eq(burnAmount);
+      
     });
   });
 });

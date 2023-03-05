@@ -5,6 +5,7 @@ import "./MyERC20.sol";
 
 interface IMyToken {
     function mint(address to, uint256 amount) external;
+    function burnFrom(address account, uint256 amount) external;
 }
 
 contract TokenSale {
@@ -21,7 +22,11 @@ contract TokenSale {
     }
 
     function burnTokens(uint256 amount) external  {
-        //Receive tokens and burn them
-        //Give ETH back to the user
+        tokenAddress.burnFrom(msg.sender, amount);
+        payable(msg.sender).transfer(amount/ratio);
+    }
+
+    function buyNFT() external{
+        
     }
 }
