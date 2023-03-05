@@ -2,22 +2,30 @@
 pragma solidity >0.7 <0.9;
 
 import "./MyERC20.sol";
+import "./MyERC721.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 interface IMyToken is IERC20{
     function mint(address to, uint256 amount) external;
     function burnFrom(address account, uint256 amount) external;
+    
+}
+
+interface IMyNFT{
+    function safeMint(address to, uint256 tokenId) external;
 }
 
 contract TokenSale {
     uint256 public ratio;
     uint256 public price;
     IMyToken public tokenAddress;
+    IMyNFT public nftAddress;
 
-    constructor(uint256 _ratio, uint256 _price, address _tokenAddress){
+    constructor(uint256 _ratio, uint256 _price, address _tokenAddress, address _nftAddress){
         ratio = _ratio;
         price = _price;
         tokenAddress = IMyToken(_tokenAddress);
+        nftAddress = IMyNFT(_nftAddress);
     }
 
     function buyTokens() external payable {
@@ -30,6 +38,7 @@ contract TokenSale {
     }
 
     function buyNFT(uint256 tokenId) external{
-        tokenAddress.transferFrom(msg.sender,address(this), price);
-    }
+        tokenAddress.transferFrom(msg.sender, address(this), price);
+        nftAddress.safeMint(msg.sender, tokenId);
+        }
 }
