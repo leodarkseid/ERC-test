@@ -7,6 +7,7 @@ import { MyToken, MyToken__factory, TokenSale, TokenSale__factory } from "../typ
 import { PromiseOrValue } from "../typechain-types/common";
 
 const TEST_TOKEN_RATIO = 1;
+const TEST_TOKEN_PRICE = ethers.utils.parseEther("0.02");
 const TEST_TOKEN_MINT = ethers.utils.parseUnits("1");
 
 describe("NFT Shop", async () => {
